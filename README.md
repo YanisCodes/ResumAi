@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ResumAi 🤖
 
-## Getting Started
+> AI-powered CV generator tailored for students and job seekers.
 
-First, run the development server:
+ResumAi helps you generate a professional, ATS-friendly CV in seconds using AI. Just fill in your details and get a clean, structured resume ready to download as PDF.
+
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+![Groq](https://img.shields.io/badge/Groq-Llama%203.3%2070B-orange?style=flat-square)
+![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)
+![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+
+---
+
+## ✨ Features
+
+- **AI-generated CVs** — Powered by Llama 3.3 70B via Groq API
+- **ATS-friendly format** — Clean, structured layout that passes applicant tracking systems
+- **PDF export** — Download your CV instantly as a PDF
+- **100% free** — No account required, no hidden fees
+- **Fast** — Generate a professional CV in under 10 seconds
+
+## 🛠️ Tech Stack
+
+- **Frontend & Backend** — Next.js 15 (App Router)
+- **AI Model** — Llama 3.3 70B via Groq API
+- **Styling** — Tailwind CSS
+- **PDF Export** — jsPDF + html2canvas
+- **Deployment** — Vercel
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- A free [Groq API key](https://console.groq.com)
+
+### Installation
 
 ```bash
+# Clone the repo
+git clone https://github.com/your-username/ResumAi.git
+cd ResumAi
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Add your Groq API key to .env.local
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file at the root of the project:
 
-## Learn More
+```
+GROQ_API_KEY=your_groq_api_key_here
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+ResumAi/
+├── app/
+│   ├── api/
+│   │   └── generate-cv/
+│   │       └── route.js      # Backend — Groq API call
+│   ├── page.js               # Frontend — Form + CV display
+│   └── layout.js
+├── .env.local                # API keys (never commit this)
+└── package.json
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤝 Contributing
 
-## Deploy on Vercel
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License — feel free to use this project for anything.
+
+---
+
+Built with ❤️ by YanisCodes (https://github.com/YanisCodes)

@@ -1,5 +1,5 @@
 {
-  "name": "cv-generator-dz",
+  "name": "resumai",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "groq-sdk": "^0.37.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.0",

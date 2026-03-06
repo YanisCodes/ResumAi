@@ -77,7 +77,7 @@ export default function Home() {
             borderRadius: 30, padding: "0.4rem 1.2rem", marginBottom: "1rem"
           }}>
             <span style={{ fontSize: "1.1rem" }}>🇩🇿</span>
-            <span style={{ color: colors.gold1, fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.1em" }}>CV GENERATOR DZ</span>
+            <span style={{ color: colors.gold1, fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.1em" }}>RESUMAI</span>
           </div>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
