@@ -5,89 +5,87 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export async function POST(request) {
   try {
     const form = await request.json();
+    const isTailor = form.mode === "tailor";
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: `Tu es un expert en rédaction de CV pour le marché algérien. 
-Tu génères UNIQUEMENT du JSON valide, sans aucun texte avant ou après, sans backticks, sans markdown.
-Le JSON doit être parfaitement parseable.`,
-        },
-        {
-          role: "user",
-          content: `Génère un CV professionnel en JSON pour cet étudiant algérien :
+    const systemPrompt = `You are an expert CV writer. You generate ONLY valid JSON, no text before or after, no backticks, no markdown. The JSON must be perfectly parseable.`;
 
-Nom : ${form.nom}
-Prénom : ${form.prenom}
-Email : ${form.email}
-Téléphone : ${form.telephone}
-Ville : ${form.ville}
-École : ${form.ecole}
-Formation : ${form.formation}
-Année : ${form.annee}
-Objectif : ${form.objectif}
-Expériences : ${form.experiences}
-Compétences : ${form.competences}
-Langues : ${form.langues}
+    const tailorExtra = isTailor && form.jobDescription
+      ? `\n\nJOB DESCRIPTION TO MATCH:\n${form.jobDescription}\n\nIMPORTANT: Tailor the CV specifically to match this job offer. Use relevant keywords from the job description. Reframe experiences and skills to align with what the employer is looking for. Optimize the professional objective to directly address the role.`
+      : "";
 
-Retourne UNIQUEMENT ce JSON (rien d'autre, pas de texte, pas de backticks) :
+    const userPrompt = `Generate a professional CV in JSON for this candidate:
+
+Name: ${form.prenom} ${form.nom}
+Email: ${form.email}
+Phone: ${form.telephone}
+City: ${form.ville}
+School: ${form.ecole}
+Field: ${form.formation}
+Year: ${form.annee}
+Objective: ${form.objectif}
+Experiences: ${form.experiences}
+Skills: ${form.competences}
+Languages: ${form.langues}
+${tailorExtra}
+
+Return ONLY this JSON (nothing else, no backticks):
 {
-  "nom_complet": "Prénom Nom",
+  "nom_complet": "First Last",
   "email": "email",
-  "telephone": "telephone",
-  "ville": "ville",
+  "telephone": "phone",
+  "ville": "city",
   "linkedin": "",
   "github": "",
-  "objectif": "Un objectif professionnel percutant en 2-3 phrases",
+  "objectif": "A compelling 2-3 sentence professional objective${isTailor ? " tailored to the job description" : ""}",
   "formation": {
-    "ecole": "nom école",
-    "diplome": "intitulé du diplôme",
+    "ecole": "school name",
+    "diplome": "degree title",
     "periode": "2023 - 2026",
-    "lieu": "ville",
-    "mentions": ["mention ou GPA si pertinent", "cours pertinents séparés par virgule"]
+    "lieu": "city",
+    "mentions": ["relevant academic achievement", "relevant coursework"]
   },
   "experiences": [
     {
-      "poste": "titre du poste",
-      "entreprise": "nom entreprise",
+      "poste": "job title",
+      "entreprise": "company name",
       "periode": "dates",
-      "lieu": "ville",
-      "points": ["accomplissement 1 avec chiffres si possible", "accomplissement 2", "accomplissement 3"]
+      "lieu": "city",
+      "points": ["achievement 1 with numbers if possible", "achievement 2", "achievement 3"]
     }
   ],
   "projets": [
     {
-      "nom": "nom du projet",
-      "tech": "technologies utilisées",
-      "points": ["description du projet", "impact ou résultat"]
+      "nom": "project name",
+      "tech": "technologies used",
+      "points": ["project description", "impact or result"]
     }
   ],
   "competences": {
-    "langages": "liste des langages",
-    "frameworks": "liste des frameworks",
-    "outils": "liste des outils"
+    "langages": "list of languages",
+    "frameworks": "list of frameworks",
+    "outils": "list of tools"
   },
-  "langues": ["Arabe (natif)", "Français (courant)"]
+  "langues": ["Arabic (native)", "French (fluent)"]
 }
 
-Si une information n'est pas fournie, génère quelque chose de plausible et professionnel basé sur le contexte étudiant algérien en informatique.
-Pour les expériences et projets, base toi sur ce que l'étudiant a fourni et enrichis avec des détails professionnels.`,
-        },
+If information is missing, generate plausible professional content based on the student context.${isTailor ? " Prioritize skills and experiences that match the job description." : ""}`;
+
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
       ],
       max_tokens: 2000,
     });
 
     const raw = completion.choices[0].message.content;
-    
-    // Clean potential markdown backticks just in case
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const cv = JSON.parse(cleaned);
 
     return Response.json({ cv });
   } catch (error) {
-    console.error("Erreur:", error);
-    return Response.json({ error: "Erreur génération CV" }, { status: 500 });
+    console.error("Error:", error);
+    return Response.json({ error: "CV generation failed" }, { status: 500 });
   }
 }
