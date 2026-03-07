@@ -17,7 +17,8 @@ function Navbar() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
+      const { data, error } = await supabase.auth.getUser();
+      console.log("[Navbar] getUser result:", { user: data?.user?.id, email: data?.user?.email, error: error?.message ?? null });
       if (data.user) {
         setUser(data.user);
         // Check premium status
@@ -40,6 +41,11 @@ function Navbar() {
   const upgradeToPremium = async () => {
     setLoadingPayment(true);
     try {
+      console.log("[upgradeToPremium] user state at call time:", {
+        userId: user?.id,
+        userEmail: user?.email,
+        userIsNull: user === null,
+      });
       const res = await fetch("/api/checkout", { method: "POST" });
       const data = await res.json();
       if (data.error === "Unauthorized") {
