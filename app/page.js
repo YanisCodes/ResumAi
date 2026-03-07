@@ -40,12 +40,12 @@ function Navbar() {
   const upgradeToPremium = async () => {
     setLoadingPayment(true);
     try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userEmail: user.email, userId: user.id }),
-      });
+      const res = await fetch("/api/checkout", { method: "POST" });
       const data = await res.json();
+      if (data.error === "Unauthorized") {
+        alert("Please log in to upgrade.");
+        return;
+      }
       if (data.checkout_url) window.location.href = data.checkout_url;
     } catch (err) {
       alert("Payment error");
