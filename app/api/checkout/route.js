@@ -38,6 +38,8 @@ export async function POST() {
       metadata: { user_id: user.id, user_email: user.email },
     });
 
+    console.log("[checkout] full checkout object:", JSON.stringify(checkout, null, 2));
+
     return Response.json({ checkout_url: checkout.checkout_url });
   } catch (error) {
     console.error("Chargily error:", error);

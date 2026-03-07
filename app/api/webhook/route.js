@@ -14,8 +14,9 @@ export async function POST(request) {
     console.log("Full body:", JSON.stringify(body, null, 2));
 
     if (body.type === "checkout.paid") {
-      const userId = body.metadata?.user_id;
+      const userId = body.data?.metadata?.user_id;
       console.log("User ID from metadata:", userId);
+      console.log("Metadata object:", body.data?.metadata);
       
       if (userId) {
         const { error } = await supabase
