@@ -1,7 +1,9 @@
 "use client";
+export const dynamic = 'force-dynamic'
 import { useState } from "react";
 import { createClient } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
+
 
 const colors = {
   gold1: "#FFD500", gold2: "#FDC500",
