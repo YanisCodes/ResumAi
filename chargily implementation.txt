@@ -1,0 +1,13 @@
+User clique "Passer Premium"
+        ↓
+ton backend crée un checkout Chargily
+        ↓
+Chargily retourne une URL de paiement
+        ↓
+User est redirigé vers la page de paiement Chargily
+        ↓
+User paie avec Edahabia ou CIB
+        ↓
+Chargily envoie un webhook à ton backend
+        ↓
+Tu marques l'user comme premium dans Supabase
