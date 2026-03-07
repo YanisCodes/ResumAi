@@ -10,16 +10,47 @@ const colors = {
 
 function Navbar() {
   const [user, setUser] = useState(null);
+  const [isPremium, setIsPremium] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        setUser(data.user);
+        // Check premium status
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_premium")
+          .eq("id", data.user.id)
+          .single();
+        setIsPremium(profile?.is_premium || false);
+      }
+    };
+    getUser();
   }, []);
 
   const logout = async () => {
     await supabase.auth.signOut();
     router.push("/auth");
+  };
+
+  const upgradeToPremium = async () => {
+    setLoadingPayment(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userEmail: user.email, userId: user.id }),
+      });
+      const data = await res.json();
+      if (data.checkout_url) window.location.href = data.checkout_url;
+    } catch (err) {
+      alert("Payment error");
+    }
+    setLoadingPayment(false);
   };
 
   return (
@@ -32,6 +63,22 @@ function Navbar() {
     }}>
       <span style={{ color: "#FFD500", fontWeight: 700, fontSize: "1rem" }}>🤖 Resumind</span>
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        {isPremium ? (
+          <span style={{
+            background: "linear-gradient(135deg, #FFD500, #FDC500)",
+            color: "#00296B", padding: "0.3rem 0.9rem",
+            borderRadius: 20, fontSize: "0.8rem", fontWeight: 700
+          }}>⭐ Premium</span>
+        ) : (
+          <button onClick={upgradeToPremium} disabled={loadingPayment} style={{
+            background: "linear-gradient(135deg, #FFD500, #FDC500)",
+            color: "#00296B", border: "none", borderRadius: 8,
+            padding: "0.4rem 1rem", fontSize: "0.85rem", fontWeight: 700,
+            cursor: "pointer", fontFamily: "inherit"
+          }}>
+            {loadingPayment ? "..." : "⭐ Upgrade — 200 DZD"}
+          </button>
+        )}
         <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.85rem" }}>{user?.email}</span>
         <button onClick={logout} style={{
           background: "rgba(255,255,255,0.1)", color: "white",
