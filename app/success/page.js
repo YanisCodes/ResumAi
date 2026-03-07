@@ -1,12 +1,47 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "../../lib/supabase";
 
 export default function Success() {
   const router = useRouter();
+  const [status, setStatus] = useState("Verifying your payment...");
 
   useEffect(() => {
-    setTimeout(() => router.push("/"), 4000);
+    const supabase = createClient();
+    let attempts = 0;
+    const maxAttempts = 20; // 20 × 3s = 60s max wait
+
+    const poll = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/auth");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_premium")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.is_premium) {
+        setStatus("Premium activated! Redirecting...");
+        setTimeout(() => router.push("/"), 1500);
+        return;
+      }
+
+      attempts++;
+      if (attempts >= maxAttempts) {
+        setStatus("Taking longer than expected. Redirecting...");
+        setTimeout(() => router.push("/"), 1500);
+        return;
+      }
+
+      setTimeout(poll, 3000);
+    };
+
+    poll();
   }, []);
 
   return (
@@ -33,7 +68,7 @@ export default function Success() {
           borderRadius: 10, padding: "0.75rem", color: "#16A34A",
           fontSize: "0.85rem"
         }}>
-          ✅ Redirecting you back in a few seconds...
+          ⏳ {status}
         </div>
       </div>
     </div>
