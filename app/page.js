@@ -287,11 +287,18 @@ export default function Home() {
         body: JSON.stringify({ ...form, mode }),
       });
       const data = await res.json();
+
+      if (data.error === "LIMIT_REACHED") {
+        alert("🚫 You've reached your daily limit of 5 CVs.\n\nUpgrade to Premium for unlimited CVs! ⭐");
+        setLoading(false);
+        return;
+      }
+
       if (data.error) throw new Error(data.error);
       setCvData(data.cv);
       setStep(2);
     } catch (err) {
-      alert("Erreur lors de la génération du CV: " + err.message);
+      alert("Error generating CV: " + err.message);
     }
     setLoading(false);
   };
