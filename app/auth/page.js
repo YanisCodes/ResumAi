@@ -26,19 +26,15 @@ export default function AuthPage() {
     setError(null);
     setMessage(null);
 
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: name } }
-      });
-      if (error) setError(error.message);
-      else setMessage("Check your email to confirm your account ✅");
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError(error.message);
-      else router.push("/");
-    }
+   if (mode === "signup") {
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name } }
+  });
+  if (error) setError(error.message);
+  else router.push("/");
+}
     setLoading(false);
   };
 
