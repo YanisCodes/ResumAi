@@ -269,6 +269,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [cvData, setCvData] = useState(null);
+  const [limitError, setLimitError] = useState(false);
   const [form, setForm] = useState({
     nom: "", prenom: "", email: "", telephone: "",
     ville: "", formation: "", ecole: "", annee: "",
@@ -277,6 +278,17 @@ export default function Home() {
   });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const upgradeToPremium = async () => {
+    try {
+      const res = await fetch("/api/checkout", { method: "POST" });
+      const data = await res.json();
+      if (data.error === "Unauthorized") { alert("Please log in to upgrade."); return; }
+      if (data.checkout_url) window.location.href = data.checkout_url;
+    } catch {
+      alert("Payment error");
+    }
+  };
 
   const generateCV = async () => {
     setLoading(true);
@@ -289,7 +301,7 @@ export default function Home() {
       const data = await res.json();
 
       if (data.error === "LIMIT_REACHED") {
-        alert("🚫 You've reached your daily limit of 5 CVs.\n\nUpgrade to Premium for unlimited CVs! ⭐");
+        setLimitError(true);
         setLoading(false);
         return;
       }
@@ -466,6 +478,38 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            {limitError && (
+              <div style={{
+                background: "linear-gradient(135deg, #fff3cd, #ffe8a1)",
+                border: "1.5px solid #FFD500",
+                borderRadius: 12,
+                padding: "1rem 1.2rem",
+                marginBottom: "1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "1rem",
+                flexWrap: "wrap",
+              }}>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 700, color: "#7a5c00", fontSize: "0.95rem" }}>
+                    🚫 Daily limit reached
+                  </p>
+                  <p style={{ margin: "0.2rem 0 0", color: "#7a5c00", fontSize: "0.83rem" }}>
+                    You've used your 5 free CVs for today. Upgrade for unlimited access.
+                  </p>
+                </div>
+                <button onClick={upgradeToPremium} style={{
+                  background: "linear-gradient(135deg, #FFD500, #FDC500)",
+                  color: "#00296B", border: "none", borderRadius: 8,
+                  padding: "0.55rem 1.2rem", fontSize: "0.88rem", fontWeight: 700,
+                  cursor: "pointer", whiteSpace: "nowrap", fontFamily: "inherit",
+                }}>
+                  ⭐ Upgrade to Premium
+                </button>
+              </div>
+            )}
 
             <button onClick={generateCV} disabled={loading} className="generate-btn" style={{
               width: "100%",
