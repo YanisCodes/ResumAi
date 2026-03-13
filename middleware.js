@@ -25,13 +25,13 @@ export async function middleware(request) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Si pas connecté et essaie d'accéder à "/" → redirect vers /auth
+  // Si pas connecté et essaie d'accéder à "/" → redirect vers /landing
   if (!user && request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/auth', request.url))
+    return NextResponse.redirect(new URL('/landing', request.url))
   }
 
-  // Si connecté et va sur /auth → redirect vers /
-  if (user && request.nextUrl.pathname === '/auth') {
+  // Si connecté et va sur /auth ou /landing → redirect vers /
+  if (user && (request.nextUrl.pathname === '/auth' || request.nextUrl.pathname === '/landing')) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
@@ -39,5 +39,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/', '/auth'],
+  matcher: ['/', '/auth', '/landing'],
 }
