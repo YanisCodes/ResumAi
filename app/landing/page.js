@@ -161,9 +161,9 @@ export default function LandingPage() {
         boxShadow: scrolled ? `0 1px 12px ${t.shadow}0.08)` : "none",
         transition: "box-shadow 0.3s, background 0.3s",
       }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.7rem 2rem" }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.7rem 2rem", position: "relative" }}>
           <span style={{ color: t.text, fontWeight: 700, fontSize: "1.05rem", fontFamily: "'Lora', serif", letterSpacing: "0.02em" }}>Resumind</span>
-          <div className="nav-mid" style={{ display: "flex", gap: "2rem" }}>
+          <div className="nav-mid" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "2rem" }}>
             <a href="#features" onClick={smoothScroll} className="nav-lnk">Features</a>
             <a href="#pricing" onClick={smoothScroll} className="nav-lnk">Pricing</a>
           </div>
